@@ -35,7 +35,7 @@ module Bitgo
       def list(session)
         request = Net::HTTP::Get.new('/api/v1/wallet')
         raw_wallets = session.call(request)
-        raw_wallets['wallets'].map{|wallet| Bitgo::Wallet.new(session, wallet)}
+        raw_wallets['wallets'].map{|wallet| new(session, wallet)}
       end
 
       # = Add Wallet
@@ -82,7 +82,7 @@ module Bitgo
                          'enterprise' => enterprise }.to_json
         raw_data = session.call(request)
 
-        Bitgo::Wallet.new(session, raw_data)
+        new(session, raw_data)
       end
     end
   end
