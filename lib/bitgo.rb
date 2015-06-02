@@ -11,6 +11,8 @@ module Bitgo
 
   extend self
 
+  NeedsUnlockError = Class.new(StandardError)
+
   ACCESS_TOKEN = "ABC123"
 
   PROD = "https://www.bitgo.com/"

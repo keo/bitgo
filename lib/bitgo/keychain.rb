@@ -52,6 +52,7 @@ module Bitgo
       request  = Net::HTTP::Post.new("/api/v1/keychain/#{xpub}")
       raw_data = session.call(request)
 
+      handle_errors(session.raw_response)
       new(session, raw_data)
     end
 
@@ -87,6 +88,14 @@ module Bitgo
       raw_data = session.call(request)
 
       new(session, raw_data)
+    end
+
+    private
+
+    def self.handle_errors(raw_response)
+      if raw_response.code == '401'
+        raise Bitgo::NeedsUnlockError
+      end
     end
   end
 end

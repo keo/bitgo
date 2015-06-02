@@ -33,9 +33,5 @@ module Bitgo
     def base_uri
       ::Bitgo.base_uri
     end
-
-    def self.login(params)
-      Auth.new(params).call
-    end
   end
 end

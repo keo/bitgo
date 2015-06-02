@@ -87,11 +87,34 @@ describe Bitgo::Keychain do
   describe '.get' do
     before do
       allow(session).to receive(:call) { get_fixture('keychain.json') }
+      allow(session).to receive(:raw_response) { double(:response, code: '200') }
     end
 
     it 'returns kechain' do
       keychain = Bitgo::Keychain.get(session, 'xpubkey')
       expect(keychain).to be_instance_of Bitgo::Keychain
+    end
+
+    context 'when needs unlock' do
+      let(:error_response) do
+        { 'error' => 'needs unlock',
+          'needsOTP' => true,
+          'needsUnlock' => true }
+      end
+
+      let(:raw_response) do
+        double(:response, code: '401', body: error_response.to_json)
+      end
+
+      before do
+        allow(session).to receive(:call) { error_response }
+        allow(session).to receive(:raw_response) { raw_response }
+      end
+
+      it 'raises needs unlock error' do
+        expect { Bitgo::Keychain.get(session, 'xpubkey') }.
+          to raise_error Bitgo::NeedsUnlockError
+      end
     end
   end
 
