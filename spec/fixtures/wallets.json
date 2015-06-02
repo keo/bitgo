@@ -1,0 +1,32 @@
+{
+  "wallets": [
+  {
+    "admin": {},
+    "id": "2NAGz3TDs5HmBU2SEodtWyks9n5KXVCzBTf",
+    "isActive": true,
+    "label": "Example wallet",
+    "permissions": "admin,spend,view",
+    "private": {
+      "keychains": [
+        "... truncated for clarity ..."
+        ]
+    },
+    "spendingAccount": true,
+    "type": "safehd"
+  },
+  {
+    "admin": {},
+    "id": "2MyWgQ3PMAWPenJnHJUPpVjFDLHhaPkZCz5",
+    "isActive": true,
+    "label": "My wallet",
+    "permissions": "admin,spend,view",
+    "private": {
+      "keychains": [
+        "... truncated for clarity ..."
+        ]
+    },
+    "spendingAccount": true,
+    "type": "safehd"
+  }
+  ]
+}
