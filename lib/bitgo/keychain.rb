@@ -6,7 +6,7 @@ module Bitgo
       @session = session
     end
 
-    def all
+    def list
       request = Net::HTTP::Get.new('/api/v1/keychain')
       session.call(request)
     end
