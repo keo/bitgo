@@ -23,20 +23,4 @@ module Bitgo
       URI("#{Bitgo::TEST}")
     end
   end
-
-  def session
-    Session.new(access_token: ACCESS_TOKEN)
-  end
-
-  def keychain
-    Keychain.new(session)
-  end
-
-  def user
-    User.new(session)
-  end
-
-  def wallet
-    Wallet.new(session)
-  end
 end
