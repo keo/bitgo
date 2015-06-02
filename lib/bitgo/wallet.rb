@@ -1,9 +1,28 @@
 module Bitgo
   class Wallet
-    attr_accessor :session
+    attr_accessor :session, :id, :label, :is_active, :type, :private,
+      :permissions, :admin, :users, :spending_account, :confirmed_balance,
+      :balance, :pending_approvals
 
-    def initialize(session)
-      @session = session
+    def initialize(session, raw_data={})
+      @session           = session
+      @id                = raw_data['id']
+      @label             = raw_data['label']
+      @is_active         = raw_data['isActive']
+      @permissions       = raw_data['permissions']
+      @balance           = raw_data['balance']
+      @confirmed_balance = raw_data['confirmedBalance']
+      @spending_account  = raw_data['spendingAccount']
+      @pending_approvals = raw_data['pendingApprovals']
+    end
+
+    def permissions
+      return [] if @permissions.nil?
+      @permissions.split(',')
+    end
+
+    def pending_approvals
+      @pending_approvals || []
     end
 
     class << self
