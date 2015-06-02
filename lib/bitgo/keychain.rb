@@ -11,12 +11,24 @@ module Bitgo
       session.call(request)
     end
 
-    # params:
-    #   xpub: The BIP32 kpub for this keychain
-    #   encryptedXprv  the encrypted, BIP32 xprv for this keychain
+    # = Create Keychain
+    #
+    # Returns an object containing the xprv and xpub for the new chain. The
+    # created keychain is not known to the BitGo service. To use it with the
+    # BitGo service, use the Keychains.Add API.
+    #
+    # For security reasons, it is highly recommended that you encrypt and
+    # destroy the original xprv immediately to prevent theft.
+    #
+    # == Parameters
+    # * <tt>xpub</tt> - The BIP32 kpub for this keychain
+    # * <tt>encryptedXprv</tt> - the encrypted, BIP32 xprv for this keychain
+    #
     def create(params)
+      xpub = params.fetch('xpub')
+      encryptedXprv = params.fetch('encryptedXprv')
       request = Net::HTTP::Post.new('/api/v1/keychain')
-      request.body = params.to_json
+      request.body = { 'xpub' => xpub, 'encryptedXprv' => encryptedXprv }
       session.call(request)
     end
 
