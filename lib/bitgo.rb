@@ -23,4 +23,10 @@ module Bitgo
       URI("#{Bitgo::TEST}")
     end
   end
+
+  # Login user
+  # returns session
+  def authenticate(params)
+    Auth.new(params).call
+  end
 end
