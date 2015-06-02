@@ -2,11 +2,18 @@ require 'net/http'
 
 module Bitgo
   class Session
-    attr_accessor :access_token, :raw_response, :env
+    attr_accessor :access_token, :raw_response, :env, :expires_in, :token_type
 
-    def initialize(options, env=:test)
-      @access_token = options.fetch(:access_token)
-      @env = env
+    def initialize(options)
+      @access_token = options.fetch('access_token')
+      @expires_in   = options.fetch('expires_in')
+      @token_type   = options.fetch('token_type')
+      @user         = options.fetch('user')
+      @env = options.fetch('env', :test)
+    end
+
+    def user
+      Bitgo::User.new(self, @user)
     end
 
     def call(request)
@@ -31,8 +38,10 @@ module Bitgo
       end
     end
 
-    def keychains
-      Bitgo::Keychains.new(self)
+    def self.login(params)
+      email    = params.fetch('email')
+      password = params.fetch('password')
+      otp      = params.fetch('otp')
     end
   end
 end
