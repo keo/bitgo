@@ -32,16 +32,33 @@ module Bitgo
       session.call(request)
     end
 
+    # = Create Bitgo Keychain
+    #
+    # Creates a new keychain on BitGo’s servers and returns the public keychain
+    # to the caller.
+    #
     def create_bitgo
       request = Net::HTTP::Post.new('/api/v1/keychain/bitgo')
       session.call(request)
     end
 
+    # = Get Keychain
+    #
+    # Lookup a keychain by xpub
+    #
+    # NOTE: This operation requires the session to be unlocked using the Unlock
+    # API.
+    #
     def get(xpub)
       request = Net::HTTP::Post.new("/api/v1/keychain/#{xpub}")
       session.call(request)
     end
 
+    # = Update Keychain
+    #
+    # Update a keychain. This is used if you wish to store a new version of the
+    # xprv (for example, if you changed the password used to encrypt the xprv).
+    #
     def update(params)
       xpub = params.fetch("xpub")
       encryptedXprv = params.fetch("encryptedXprv")
