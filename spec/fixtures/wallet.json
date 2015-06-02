@@ -1,0 +1,27 @@
+{
+  "id":"2MsajnHwkzQvggkb6Zbi7kaLMcpeCko4BKB",
+  "label":"My Test Wallet",
+  "isActive":true,
+  "private":{
+    "keychains":[
+      {
+        "xpub":"xpub661MyMwAqRbcF8BFQAaLnkkDar6uHQZn9cvzPX5qdfUL42gyts7YeYHZgWvNVjcUDP8BEDMduMBhtKLnVAKaT3sW1g14xnv29w5D3ts8LVd",
+        "path":"/0/0"
+      },
+      {
+        "xpub":"xpub661MyMwAqRbcF3MqMfvo7swQwRzEVRyCPry4rmp346Dv6zR4CNFzrtu4bMpeNazCNNa9p3p5z56svzRcnF9LEm3Ha2zSgq2cLrperm7z4oh",
+        "path":"/0/0"
+      },
+      {
+        "xpub":"xpub661MyMwAqRbcG96fDEgYGmjKwdQvxG38rr9gTcqszjdU1s5kjLkTD8pTDxYf4ECrkVbGdpTktuc2BwUR1YKvTdNu5U8mxnDp68QAnvdy1WE",
+        "path":"/0/0"
+      }
+    ]
+  },
+  "permissions":"admin,spend,view",
+  "admin":{},
+  "spendingAccount":true,
+  "confirmedBalance":0,
+  "balance":0,
+  "pendingApprovals":[]
+}
