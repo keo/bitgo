@@ -2,7 +2,7 @@ require 'openssl'
 
 module Bitgo
   class Auth
-    attr_accessor :email, :password, :otp, :digest
+    attr_accessor :email, :password, :otp, :digest, :response
 
     def initialize(options)
       @email    = options.fetch('email')
@@ -16,13 +16,16 @@ module Bitgo
       http = Net::HTTP.new(base_uri.host, base_uri.port)
       http.use_ssl = true
 
-      request = Net::HTTP::Post.new('/api/v1/users/login')
+      request = Net::HTTP::Post.new('/api/v1/user/login')
+      request.add_field('Content-type', 'application/json')
       request.body = { 'email'    => email,
                        'password' => encrypted_password,
                        'otp'      => otp }.to_json
       response = http.request(request)
+      response = JSON.parse(response.body)
 
-      Bitgo::Session.new(response)
+      # TODO: Handle errors
+      Session.new(response)
     end
 
     def encrypted_password
