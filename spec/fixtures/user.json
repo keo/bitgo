@@ -1,0 +1,12 @@
+{
+  "user": {
+    "id": "53532a4b43fd69a42f000005f0a2ed87fd8b020040739beb513524b5",
+    "isActive": true,
+    "name": {
+      "first": "Jane",
+      "full": "Jane Doe",
+      "last": "Doe"
+    },
+    "username": "janedoe@bitgo.com"
+  }
+}
