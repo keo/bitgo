@@ -1,14 +1,58 @@
 module Bitgo
   class Keychain
-    attr_accessor :session
+    attr_accessor :session, :xpub, :path, :xprv, :encrypted_xprv
 
-    def initialize(session)
-      @session = session
+    def initialize(session, raw_data={})
+      @session        = session
+      @xpub           = raw_data['xpub']
+      @is_bitgo       = raw_data['isBitgo']
+      @path           = raw_data['path']
+      @xprv           = raw_data['xprv']
+      @encrypted_xprv = raw_data['encryptedXprv']
     end
 
-    def list
-      request = Net::HTTP::Get.new('/api/v1/keychain')
-      session.call(request)
+    def bitgo?
+      @is_bitgo
+    end
+
+    # = Update Keychain
+    #
+    # Update a keychain. This is used if you wish to store a new version of the
+    # xprv (for example, if you changed the password used to encrypt the xprv).
+    def update(params)
+      encryptedXprv = params.fetch("encryptedXprv")
+      request       = Net::HTTP::Put.new("/api/v1/keychain/#{xpub}")
+      request.body  = { "encryptedXprv" => encryptedXprv }.to_json
+      raw_data = session.call(request)
+
+      # TODO: Redundant from #initialize
+      @xpub           = raw_data['xpub']
+      @is_bitgo       = raw_data['isBitgo']
+      @path           = raw_data['path']
+      @xprv           = raw_data['xprv']
+      @encrypted_xprv = raw_data['encryptedXprv']
+    end
+
+    # = List Keychains
+    #
+    # Get the list of public keychains for the user
+    def self.list(session)
+      request  = Net::HTTP::Get.new('/api/v1/keychain')
+      raw_data = session.call(request)
+      raw_data['keychains'].map{ |keychain| new(session, keychain) }
+    end
+
+    # = Get Keychain
+    #
+    # Lookup a keychain by xpub
+    #
+    # NOTE: This operation requires the session to be unlocked using the Unlock
+    # API.
+    def self.get(session, xpub)
+      request  = Net::HTTP::Post.new("/api/v1/keychain/#{xpub}")
+      raw_data = session.call(request)
+
+      new(session, raw_data)
     end
 
     # = Create Keychain
@@ -23,56 +67,26 @@ module Bitgo
     # == Parameters
     # * <tt>xpub</tt> - The BIP32 kpub for this keychain
     # * <tt>encryptedXprv</tt> - the encrypted, BIP32 xprv for this keychain
-    #
-    def create(params)
-      xpub = params.fetch('xpub')
+    def self.create(session, params)
+      xpub          = params.fetch('xpub')
       encryptedXprv = params.fetch('encryptedXprv')
-      request = Net::HTTP::Post.new('/api/v1/keychain')
-      request.body = { 'xpub' => xpub, 'encryptedXprv' => encryptedXprv }
-      session.call(request)
+      request       = Net::HTTP::Post.new('/api/v1/keychain')
+      request.body  = { 'xpub' => xpub, 'encryptedXprv' => encryptedXprv }
+      raw_data      = session.call(request)
+
+      # TODO: Handle errors
+      new(session, raw_data)
     end
 
     # = Create Bitgo Keychain
     #
     # Creates a new keychain on BitGo’s servers and returns the public keychain
     # to the caller.
-    #
-    def create_bitgo
-      request = Net::HTTP::Post.new('/api/v1/keychain/bitgo')
-      session.call(request)
-    end
+    def self.create_bitgo(session)
+      request  = Net::HTTP::Post.new('/api/v1/keychain/bitgo')
+      raw_data = session.call(request)
 
-    # = Get Keychain
-    #
-    # Lookup a keychain by xpub
-    #
-    # NOTE: This operation requires the session to be unlocked using the Unlock
-    # API.
-    #
-    def get(xpub)
-      request = Net::HTTP::Post.new("/api/v1/keychain/#{xpub}")
-      session.call(request)
-    end
-
-    # = Update Keychain
-    #
-    # Update a keychain. This is used if you wish to store a new version of the
-    # xprv (for example, if you changed the password used to encrypt the xprv).
-    #
-    def update(params)
-      xpub = params.fetch("xpub")
-      encryptedXprv = params.fetch("encryptedXprv")
-      request = Net::HTTP::Put.new("/api/v1/keychain/#{xpub}")
-      request.body = { "encryptedXprv" => encryptedXprv }.to_json
-      session.call(request)
-    end
-
-    def self.create(session, params)
-      new(session).create(params)
-    end
-
-    def self.create_bitgo(session, params)
-      new(session).create_bitgo(params)
+      new(session, raw_data)
     end
   end
 end

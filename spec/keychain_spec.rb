@@ -2,55 +2,135 @@ require 'spec_helper'
 
 describe Bitgo::Keychain do
   let(:session) { double(:session) }
+  let(:keychain) { Bitgo::Keychain.new(session, data) }
 
-  describe '#create' do
-    let(:params) {
-      { "xpub" => "test 123 key pub",
-        "encryptedXprv" => "oaeaoeu aeuaoeuaou" }
-    }
+  describe '#xpub' do
+    let(:data) { { 'xpub' => 'aoeuaoeu' } }
 
-    before do
-      allow(session).to receive(:call) { get_fixture('keychain.json') }
+    it 'sets default xpub' do
+      expect(Bitgo::Keychain.new(session).xpub).to be_nil
     end
 
-    it 'creates keychain' do
-      response = Bitgo::Keychain.create(session, params)
-      expect(response).not_to have_key ("error")
-    end
-
-    it 'creates bitgo keychain' do
-      response = Bitgo::Keychain.new(session).create_bitgo
-      expect(response).not_to have_key ("error")
+    it 'sets value from raw_data' do
+      expect(keychain.xpub).to eq data['xpub']
     end
   end
 
-  describe '#get' do
+  describe '#bitgo?' do
+    let(:data) { { 'isBitgo' => true } }
+    it 'sets default' do
+      expect(Bitgo::Keychain.new(session).bitgo?).to be_nil
+    end
+
+    it 'sets bitgo' do
+      expect(keychain).to be_bitgo
+    end
+  end
+
+  describe '#path' do
+    let(:data) { { 'path' => '0/0' } }
+    it 'sets default value' do
+      expect(Bitgo::Keychain.new(session).path).to be_nil
+    end
+
+    it 'sets value from raw_data' do
+      expect(keychain.path).to eq data['path']
+    end
+  end
+
+  describe '#xprv' do
+    let(:data) { { 'xprv' => 'aoeu12342' } }
+    it 'sets default value' do
+      expect(Bitgo::Keychain.new(session).xprv).to be_nil
+    end
+
+    it 'sets value from raw_data' do
+      expect(keychain.xprv).to eq data['xprv']
+    end
+  end
+
+  describe '#encrypted_xprv' do
+    let(:data) { { 'encryptedXprv' => 'aoeuaeuthth123h1t2h3t12' } }
+
+    it 'sets default value' do
+      expect(Bitgo::Keychain.new(session).encrypted_xprv).to be_nil
+    end
+
+    it 'sets value from raw_data' do
+      expect(keychain.encrypted_xprv).to eq data['encryptedXprv']
+    end
+  end
+
+  describe '.create' do
+    let(:params) do
+      { "xpub" => "test 123 key pub",
+        "encryptedXprv" => "oaeaoeu aeuaoeuaou" }
+    end
+    let(:raw_data) { get_fixture('keychain.json') }
+
+    before do
+      allow(session).to receive(:call) { raw_data }
+    end
+
+    it 'creates keychain' do
+      keychain = Bitgo::Keychain.create(session, params)
+      expect(keychain).to be_instance_of Bitgo::Keychain
+      expect(keychain.xpub).to eq raw_data['xpub']
+    end
+
+    it 'creates bitgo keychain' do
+      keychain = Bitgo::Keychain.create_bitgo(session)
+      expect(keychain).to be_instance_of Bitgo::Keychain
+    end
+  end
+
+  describe '.get' do
     before do
       allow(session).to receive(:call) { get_fixture('keychain.json') }
     end
 
     it 'returns kechain' do
-      keychain = Bitgo::Keychain.new(session)
-      response = keychain.get('xpub661MyMwAqRbcGQjyyTX5B1S2t78UStir1oFFHZLdLdpLiufL7hB4pPbJFnd9mpJXbHoq3dU7nU2NevzCsPHRqXpPYRh3QULWKxTZnB8FNat')
+      keychain = Bitgo::Keychain.get(session, 'xpubkey')
+      expect(keychain).to be_instance_of Bitgo::Keychain
+    end
+  end
 
-      expect(response).to have_key("xpub")
+  describe '.list' do
+    before do
+      allow(session).to receive(:call) { get_fixture('keychains.json') }
+    end
+
+    it 'returns an array of keychain object' do
+      keychains = Bitgo::Keychain.list(session)
+      expect(keychains.first).to be_instance_of Bitgo::Keychain
     end
   end
 
   describe '#update' do
-    let(:xpub) { "xpub661MyMwAqRbcGQjyyTX5B1S2t78UStir1oFFHZLdLdpLiufL7hB4pPbJFnd9mpJXbHoq3dU7nU2NevzCsPHRqXpPYRh3QULWKxTZnB8FNat" }
-    let(:params) {
-      { "encryptedXprv" => "aoeaoeu aoeuathoesuha soetuhsatoehu satoheusatoheu",
-        "xpub" => "xpub661MyMwAqRbcGQjyyTX5B1S2t78UStir1oFFHZLdLdpLiufL7hB4pPbJFnd9mpJXbHoq3dU7nU2NevzCsPHRqXpPYRh3QULWKxTZnB8FNat"}
-    }
-
-    before do
-      allow(session).to receive(:call) { get_fixture('keychain.json') }
+    let(:xpub) { "myxpub" }
+    let(:keychain) do
+      Bitgo::Keychain.new(session, { 'xpub' => xpub,
+                                     'encryptedXprv' => 'oldxprv' })
+    end
+    let(:params) do
+      { "encryptedXprv" => "newxprv" }
+    end
+    let(:response_data) do
+      {
+        "xpub" => "xpub661MyMwAqRbcGzVAChrAGb6MYDrAXndUC7h8T7AF8UhfbjS7Au7UKTXmVXaFasQPdfmnUjccreRTMrW7kTmjzwMqVrTHNAFs8M3CXTJpcnL",
+        "encryptedXprv" => "newxprv",
+        "path" => "m"
+      }
     end
 
-    it 'updates keychain' do
-      keychain = Bitgo::Keychain.new(session)
-      response = keychain.update(params)
+    before do
+      allow(session).to receive(:call) { response_data }
+    end
+
+    it 'returns updated keychain' do
+      expect do
+        keychain.update(params)
+      end.to change { keychain.encrypted_xprv }.from("oldxprv").to("newxprv")
     end
   end
 end
