@@ -9,7 +9,7 @@ module Bitgo
       @expires_in   = options.fetch('expires_in')
       @token_type   = options.fetch('token_type')
       @user         = options.fetch('user')
-      @env = options.fetch('env', :test)
+      @env          = options.fetch('env', :test)
     end
 
     def user
@@ -31,17 +31,11 @@ module Bitgo
     end
 
     def base_uri
-      if env == :prod
-        URI("#{Bitgo::PROD}")
-      else
-        URI("#{Bitgo::TEST}")
-      end
+      ::Bitgo.base_uri
     end
 
     def self.login(params)
-      email    = params.fetch('email')
-      password = params.fetch('password')
-      otp      = params.fetch('otp')
+      Auth.new(params).call
     end
   end
 end
