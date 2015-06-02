@@ -78,18 +78,35 @@ describe Bitgo::Wallet do
     end
   end
 
-  describe '#list' do
+  describe '.get' do
+    let(:raw_data) { get_fixture('wallet.json') }
+    before do
+      allow(session).to receive(:call) { raw_data }
+    end
+
+    it 'returns wallet' do
+      wallet = Bitgo::Wallet.get(session, 'walletid123123')
+      expect(wallet).to be_instance_of Bitgo::Wallet
+    end
+
+    it 'sets data from raw_data' do
+      wallet = Bitgo::Wallet.get(session, 'walletid123123')
+      expect(wallet.id).to eq raw_data['id']
+    end
+  end
+
+  describe '.list' do
     before do
       allow(session).to receive(:call) { get_fixture('wallets.json') }
     end
 
     it 'returns list of wallets' do
       wallets = Bitgo::Wallet.list(session)
-      expect(wallets).to have_key('wallets')
+      expect(wallets.first).to be_instance_of Bitgo::Wallet
     end
   end
 
-  describe '#add' do
+  describe '.add' do
     let(:params) do
       { 'label' => 'My Wallet',
         'm' => 2,
@@ -108,7 +125,7 @@ describe Bitgo::Wallet do
 
     it 'adds wallet' do
       wallet = Bitgo::Wallet.add(session, params)
-      expect(wallet).to have_key('id')
+      expect(wallet).to be_instance_of Bitgo::Wallet
     end
   end
 end

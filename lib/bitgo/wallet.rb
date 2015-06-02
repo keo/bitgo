@@ -26,9 +26,16 @@ module Bitgo
     end
 
     class << self
+      def get(session, id)
+        request = Net::HTTP::Get.new("/api/v1/wallet/#{id}")
+        data = session.call(request)
+        new(session, data)
+      end
+
       def list(session)
         request = Net::HTTP::Get.new('/api/v1/wallet')
-        session.call(request)
+        raw_wallets = session.call(request)
+        raw_wallets['wallets'].map{|wallet| Bitgo::Wallet.new(session, wallet)}
       end
 
       # = Add Wallet
@@ -73,7 +80,9 @@ module Bitgo
                          'n'          => n,
                          'keychains'  => keychains,
                          'enterprise' => enterprise }.to_json
-        session.call(request)
+        raw_data = session.call(request)
+
+        Bitgo::Wallet.new(session, raw_data)
       end
     end
   end
