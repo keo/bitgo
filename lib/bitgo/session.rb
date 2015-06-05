@@ -17,8 +17,8 @@ module Bitgo
     end
 
     def unlock(params)
-      otp      = params.fetch(:otp)
-      duration = params.fetch(:duration, nil)
+      otp      = params.fetch('otp')
+      duration = params.fetch('duration', nil)
 
       request = Net::HTTP::Post.new('/api/v1/user/unlock')
       request.body = { 'otp' => otp, 'duration' => duration }.to_json
