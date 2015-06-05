@@ -16,6 +16,22 @@ module Bitgo
       Bitgo::User.new(self, @user)
     end
 
+    def unlock(params)
+      otp      = params.fetch(:otp)
+      duration = params.fetch(:duration, nil)
+
+      request = Net::HTTP::Post.new('/api/v1/user/unlock')
+      request.body = { 'otp' => otp, 'duration' => duration }.to_json
+
+      call(request)
+    end
+
+    def lock(params)
+      request = Net::HTTP::Post.new('/api/v1/user/lock')
+
+      call(request)
+    end
+
     def call(request)
       http = Net::HTTP.new(base_uri.host, base_uri.port)
       http.use_ssl = true
