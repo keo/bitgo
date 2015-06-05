@@ -22,7 +22,22 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Get session
+
+```ruby
+session = Bitgo.authenticate('email'    => 'johndoe@example.com',
+                             'password' => 'secretpassword',
+                             'otp'      => '123123123')
+```
+
+Get current user
+
+```ruby
+me = Bitgo::User.me(session)
+
+me.username
+# => 'johndoe@example.com'
+```
 
 ## Development
 
