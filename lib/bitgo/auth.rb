@@ -2,6 +2,9 @@ require 'openssl'
 
 module Bitgo
   class Auth
+    BadRequestError = Class.new(StandardError)
+    UnauthorizedError = Class.new(StandardError)
+
     attr_accessor :email, :password, :otp, :digest, :response
 
     def initialize(options)
@@ -21,8 +24,10 @@ module Bitgo
       request.body = { 'email'    => email,
                        'password' => encrypted_password,
                        'otp'      => otp }.to_json
-      response = http.request(request)
-      response = JSON.parse(response.body)
+      raw_response = http.request(request)
+      response = JSON.parse(raw_response.body)
+
+      handle_error(raw_response)
 
       # TODO: Handle errors
       Session.new(response)
@@ -35,6 +40,17 @@ module Bitgo
 
     def base_uri
       Bitgo.base_uri
+    end
+
+    private
+
+    def handle_error(response)
+      case response.code
+      when '400'
+        raise BadRequestError.new
+      when '401'
+        raise UnauthorizedError.new
+      end
     end
   end
 end
