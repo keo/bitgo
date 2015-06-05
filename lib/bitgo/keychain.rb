@@ -72,7 +72,7 @@ module Bitgo
       xpub          = params.fetch('xpub')
       encryptedXprv = params.fetch('encryptedXprv')
       request       = Net::HTTP::Post.new('/api/v1/keychain')
-      request.body  = { 'xpub' => xpub, 'encryptedXprv' => encryptedXprv }
+      request.body  = { 'xpub' => xpub, 'encryptedXprv' => encryptedXprv }.to_json
       raw_data      = session.call(request)
 
       # TODO: Handle errors
