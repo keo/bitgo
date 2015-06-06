@@ -1,10 +1,6 @@
 module Bitgo
   class Keychain < Resource
-    attribute(:xpub)
-    attribute(:path)
-    attribute(:xprv)
-    attribute(:encrypted_xprv)
-    attribute(:is_bitgo)
+    attributes(:xpub, :path, :xprv, :encrypted_xprv, :is_bitgo)
 
     def bitgo?
       is_bitgo

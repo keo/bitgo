@@ -12,6 +12,12 @@ module Bitgo
       end
     end
 
+    def self.attributes(*attrs)
+      attrs.each do |attr|
+        self.attribute(attr)
+      end
+    end
+
     attr_accessor :session, :data
 
     def initialize(session, raw_data={})
