@@ -1,18 +1,17 @@
 module Bitgo
-  class Wallet
-    attr_accessor :session, :id, :label, :is_active, :type, :private,
-      :permissions, :admin, :users, :spending_account, :confirmed_balance,
-      :balance, :pending_approvals
+  class Wallet < Resource
+    attr_accessor :type, :private, :permissions, :admin, :users, :pending_approvals
+
+    attribute(:id)
+    attribute(:label)
+    attribute(:is_active)
+    attribute(:balance)
+    attribute(:confirmed_balance)
+    attribute(:spending_account)
 
     def initialize(session, raw_data={})
-      @session           = session
-      @id                = raw_data['id']
-      @label             = raw_data['label']
-      @is_active         = raw_data['isActive']
+      super(session, raw_data)
       @permissions       = raw_data['permissions']
-      @balance           = raw_data['balance']
-      @confirmed_balance = raw_data['confirmedBalance']
-      @spending_account  = raw_data['spendingAccount']
       @pending_approvals = raw_data['pendingApprovals']
     end
 

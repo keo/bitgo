@@ -1,18 +1,13 @@
 module Bitgo
-  class Keychain
-    attr_accessor :session, :xpub, :path, :xprv, :encrypted_xprv
-
-    def initialize(session, raw_data={})
-      @session        = session
-      @xpub           = raw_data['xpub']
-      @is_bitgo       = raw_data['isBitgo']
-      @path           = raw_data['path']
-      @xprv           = raw_data['xprv']
-      @encrypted_xprv = raw_data['encryptedXprv']
-    end
+  class Keychain < Resource
+    attribute(:xpub)
+    attribute(:path)
+    attribute(:xprv)
+    attribute(:encrypted_xprv)
+    attribute(:is_bitgo)
 
     def bitgo?
-      @is_bitgo
+      is_bitgo
     end
 
     # = Update Keychain
@@ -26,11 +21,11 @@ module Bitgo
       raw_data = session.call(request)
 
       # TODO: Redundant from #initialize
-      @xpub           = raw_data['xpub']
-      @is_bitgo       = raw_data['isBitgo']
-      @path           = raw_data['path']
-      @xprv           = raw_data['xprv']
-      @encrypted_xprv = raw_data['encryptedXprv']
+      self.xpub           = raw_data['xpub']
+      self.is_bitgo       = raw_data['isBitgo']
+      self.path           = raw_data['path']
+      self.xprv           = raw_data['xprv']
+      self.encrypted_xprv = raw_data['encryptedXprv']
     end
 
     # = List Keychains

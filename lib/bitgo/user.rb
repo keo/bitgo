@@ -1,20 +1,21 @@
 module Bitgo
-  class User
-    attr_accessor :session, :id, :first_name, :last_name, :full_name, :username
+  class User < Resource
+    attr_accessor :first_name, :last_name, :full_name
+
+    attribute(:id)
+    attribute(:username)
+    attribute(:is_active)
 
     def initialize(session, raw_data={})
-      @session = session
-      @id            = raw_data['id']
+      super(session, raw_data)
       name           = raw_data['name'] || {}
       @first_name    = name['first']
       @last_name     = name['last']
       @full_name     = name['full']
-      @username      = raw_data['username']
-      @isActive      = raw_data['isActive']
     end
 
     def active?
-      @isActive
+      is_active
     end
 
     def self.me(session)
