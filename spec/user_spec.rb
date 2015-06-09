@@ -65,12 +65,13 @@ describe Bitgo::User do
     end
   end
 
-  describe '.me' do
+  describe '.me!' do
     before do
       allow(session).to receive(:call) { get_fixture('user.json') }
     end
+
     it 'returns User object' do
-      expect(Bitgo::User.me(session)).to be_instance_of Bitgo::User
+      expect(Bitgo::User.me!(session)).to be_instance_of Bitgo::User
     end
   end
 end

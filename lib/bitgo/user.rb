@@ -17,6 +17,10 @@ module Bitgo
     end
 
     def self.me(session)
+      session.user
+    end
+
+    def self.me!(session)
       request = Net::HTTP::Get.new('/api/v1/user/me')
       raw_data = session.call(request)
 
