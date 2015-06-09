@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Tristan Peralta"]
   spec.email         = ["tristanperalta@gmail.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
+  spec.summary       = %q{ Bitgo Ruby bindings }
   spec.description   = %q{TODO: Write a longer description or delete this line.}
   spec.homepage      = "TODO: Put your gem's website or public repo URL here."
 
@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
     spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com' to prevent pushes to rubygems.org, or delete to allow pushes to any server."
   end
 
-  spec.add_dependency "activesupport", "~> 4.2.1"
+  spec.add_runtime_dependency "activesupport", ">= 3"
 
   spec.add_development_dependency "bundler", "~> 1.9"
   spec.add_development_dependency "rake", "~> 10.0"
