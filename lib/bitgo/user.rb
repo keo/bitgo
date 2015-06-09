@@ -20,7 +20,7 @@ module Bitgo
       request = Net::HTTP::Get.new('/api/v1/user/me')
       raw_data = session.call(request)
 
-      new(session, raw_data)
+      new(session, raw_data['user'])
     end
   end
 end
