@@ -1,8 +1,11 @@
 module Bitgo
-  class Session
+  class Session < Resource
     attr_accessor :token
 
+    attributes(:client, :user, :expires, :origin)
+
     def initialize(token, raw_data={})
+      super(token, raw_data)
       @token = token
     end
 
