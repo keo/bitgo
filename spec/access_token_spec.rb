@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Bitgo::Session do
+describe Bitgo::AccessToken do
   let(:options) { get_fixture('session.json') }
-  let(:session) { Bitgo::Session.new(options) }
+  let(:session) { Bitgo::AccessToken.new(options) }
 
   specify '#access_token' do
     expect(session.access_token).to eq options['access_token']

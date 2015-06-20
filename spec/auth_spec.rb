@@ -23,7 +23,7 @@ describe Bitgo::Auth do
       end
 
       it 'returns session object' do
-        expect(Bitgo::Auth.new(options).call).to be_instance_of Bitgo::Session
+        expect(Bitgo::Auth.new(options).call).to be_instance_of Bitgo::AccessToken
       end
     end
 

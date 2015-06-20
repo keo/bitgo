@@ -30,7 +30,7 @@ module Bitgo
       handle_error(raw_response)
 
       # TODO: Handle errors
-      Session.new(response)
+      AccessToken.new(response)
     end
 
     def encrypted_password

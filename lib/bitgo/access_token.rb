@@ -1,7 +1,7 @@
 require 'net/http'
 
 module Bitgo
-  class Session
+  class AccessToken
     attr_accessor :access_token, :raw_response, :env, :expires_in, :token_type
 
     def initialize(options)
