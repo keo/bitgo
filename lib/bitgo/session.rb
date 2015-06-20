@@ -16,11 +16,17 @@ module Bitgo
       Bitgo::User.new(self, @user)
     end
 
+    def sendotp(params={})
+      request = Net::HTTP::Post.new('/api/v1/user/sendotp')
+      call(request)
+    end
+
     def unlock(params)
       otp      = params.fetch('otp')
-      duration = params.fetch('duration', nil)
+      duration = params.fetch('duration', 600)
 
       request = Net::HTTP::Post.new('/api/v1/user/unlock')
+      request.add_field('Content-type', 'application/json')
       request.body = { 'otp' => otp, 'duration' => duration }.to_json
 
       call(request)
