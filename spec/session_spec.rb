@@ -11,6 +11,7 @@ RSpec.describe Bitgo::Session do
     specify(:user) { expect(subject.user).to eq data['user'] }
     specify(:expires) { expect(subject.expires).to eq data['expires'] }
     specify(:origin) { expect(subject.origin).to eq data['origin'] }
+    specify(:scope) { expect(subject.scope).to match_array data['scope'] }
   end
 
   describe '.get' do
