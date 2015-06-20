@@ -23,6 +23,7 @@ module Bitgo
       request.body = { 'otp' => otp, 'duration' => duration }.to_json
 
       call(request)
+      self
     end
 
     def lock
