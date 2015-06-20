@@ -19,7 +19,7 @@ RSpec.describe Bitgo::Session do
         and_return(get_fixture('session.json'))
     end
 
-    it 'returns itself' do
+    it 'returns the updated itself' do
       expect(subject.unlock('otp' => 'xx')).to be_instance_of Bitgo::Session
     end
   end

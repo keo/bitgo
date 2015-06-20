@@ -1,8 +1,8 @@
 module Bitgo
   class Session < Resource
-    attr_accessor :token
+    attr_accessor :token, :raw_response
 
-    attributes(:client, :user, :expires, :origin, :scope)
+    attributes(:client, :user, :expires, :origin, :scope, :unlock)
 
     def initialize(token, raw_data={})
       super(token, raw_data)
@@ -22,7 +22,8 @@ module Bitgo
       request.add_field('Content-type', 'application/json')
       request.body = { 'otp' => otp, 'duration' => duration }.to_json
 
-      call(request)
+      raw_token = call(request)
+      update_attributes(raw_token)
       self
     end
 

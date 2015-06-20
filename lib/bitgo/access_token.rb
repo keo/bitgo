@@ -2,7 +2,7 @@ require 'net/http'
 
 module Bitgo
   class AccessToken
-    attr_accessor :access_token, :raw_response, :expires_in, :token_type
+    attr_accessor :access_token, :expires_in, :token_type
 
     def initialize(options)
       @access_token = options.fetch('access_token')

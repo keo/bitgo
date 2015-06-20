@@ -32,8 +32,8 @@ module Bitgo
 
     def update_attributes(attrs={})
       attrs.each do |k, v|
-        key = k.to_s
-        self.send("#{key}=", v) if @@attributes.include?(key)
+        attr = k.to_s
+        @data[attr] = v if @@attributes.include?(attr)
       end
     end
   end
