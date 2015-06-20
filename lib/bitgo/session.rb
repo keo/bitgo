@@ -48,5 +48,12 @@ module Bitgo
     def base_uri
       ::Bitgo.base_uri
     end
+
+    # Instatiate session from a given token
+    def self.get(token)
+      request = Net::HTTP::Get.new('/api/v1/user/session')
+      raw_data = new(token).call(request)
+      new(token, raw_data['session'])
+    end
   end
 end
