@@ -1,15 +1,19 @@
-{
-  "access_token": "3fe0bf671c943af5ee3b739d2b17ffced7fdde62",
-  "expires_in": 3600,
-  "token_type": "bearer",
-  "user": {
-    "id": "53532a4b43fd69a42f000005f0a2ed87fd8b020040739beb513524b5",
-    "isActive": true,
-    "name": {
-      "first": "Jane",
-      "full": "Jane Doe",
-      "last": "Doe"
-    },
-    "username": "janedoe@bitgo.com"
-  }
+{ "client": "bitgo",
+  "user": "5458141599f715232500000530a94fd2",
+  "scope": [ "user_manage",
+             "openid",
+             "profile",
+             "wallet_create",
+             "wallet_manage_all",
+             "wallet_approve_all",
+             "wallet_spend_all",
+             "wallet_edit_all",
+             "wallet_view_all" ],
+  "expires": "2015-01-21T02:18:11.534Z",
+  "origin": "test.bitgo.com",
+  "unlock": { "time": "2015-01-21T01:20:25.366Z",
+              "expires": "2015-01-21T01:30:25.366Z",
+              "txCount": 0,
+              "txValue": 0
+            }
 }

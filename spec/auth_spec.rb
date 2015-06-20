@@ -15,7 +15,7 @@ describe Bitgo::Auth do
 
     context 'on success' do
       let(:response) do
-        double(:response, code: '200', body: get_fixture('session.json').to_json)
+        double(:response, code: '200', body: get_fixture('access_token.json').to_json)
       end
 
       before do
