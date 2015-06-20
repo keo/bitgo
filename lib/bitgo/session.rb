@@ -32,7 +32,7 @@ module Bitgo
       call(request)
     end
 
-    def lock(params)
+    def lock
       request = Net::HTTP::Post.new('/api/v1/user/lock')
 
       call(request)
