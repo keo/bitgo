@@ -2,26 +2,23 @@ module Bitgo
   class HTTP
     attr_accessor :token, :raw_response
 
+    METHODS = {
+      get:    Net::HTTP::Get,
+      post:   Net::HTTP::Post,
+      put:    Net::HTTP::Put,
+      delete: Net::HTTP::Delete
+    }
+
     def initialize(token=nil)
       @token = token
     end
 
-    def get(path, body='')
-      request      = Net::HTTP::Get.new(path)
-      request.body = body
-      call(request)
-    end
-
-    def post(path, body='')
-      request      = Net::HTTP::Post.new(path)
-      request.body = body
-      call(request)
-    end
-
-    def put(path, body='')
-      request      = Net::HTTP::Put.new(path)
-      request.body = body
-      call(request)
+    METHODS.each do |m, klass|
+      define_method m do |path, body=''|
+        request = klass.new(path)
+        request.body = body
+        call(request)
+      end
     end
 
     def call(request)
