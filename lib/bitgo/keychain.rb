@@ -12,9 +12,8 @@ module Bitgo
     # xprv (for example, if you changed the password used to encrypt the xprv).
     def update(params)
       encryptedXprv = params.fetch("encryptedXprv")
-      request       = Net::HTTP::Put.new("/api/v1/keychain/#{xpub}")
-      request.body  = { "encryptedXprv" => encryptedXprv }.to_json
-      raw_data = session.call(request)
+      body  = { "encryptedXprv" => encryptedXprv }.to_json
+      raw_data = HTTP.new(token).put("/api/v1/keychain/#{xpub}", body)
 
       # TODO: Redundant from #initialize
       self.xpub           = raw_data['xpub']
@@ -27,10 +26,9 @@ module Bitgo
     # = List Keychains
     #
     # Get the list of public keychains for the user
-    def self.list(session)
-      request  = Net::HTTP::Get.new('/api/v1/keychain')
-      raw_data = session.call(request)
-      raw_data['keychains'].map{ |keychain| new(session, keychain) }
+    def self.list(token)
+      raw_data = HTTP.new(token).get('/api/v1/keychain')
+      raw_data['keychains'].map{ |keychain| new(token, keychain) }
     end
 
     # = Get Keychain
@@ -39,12 +37,12 @@ module Bitgo
     #
     # NOTE: This operation requires the session to be unlocked using the Unlock
     # API.
-    def self.get(session, xpub)
-      request  = Net::HTTP::Post.new("/api/v1/keychain/#{xpub}")
-      raw_data = session.call(request)
+    def self.get(token, xpub)
+      http = HTTP.new(token)
+      raw_data = http.post("/api/v1/keychain/#{xpub}")
 
-      handle_errors(session.raw_response)
-      new(session, raw_data)
+      handle_errors(http.raw_response)
+      new(token, raw_data)
     end
 
     # = Create Keychain
@@ -59,26 +57,24 @@ module Bitgo
     # == Parameters
     # * <tt>xpub</tt> - The BIP32 kpub for this keychain
     # * <tt>encryptedXprv</tt> - the encrypted, BIP32 xprv for this keychain
-    def self.create(session, params)
+    def self.create(token, params)
       xpub          = params.fetch('xpub')
       encryptedXprv = params.fetch('encryptedXprv')
-      request       = Net::HTTP::Post.new('/api/v1/keychain')
-      request.body  = { 'xpub' => xpub, 'encryptedXprv' => encryptedXprv }.to_json
-      raw_data      = session.call(request)
+      body  = { 'xpub' => xpub, 'encryptedXprv' => encryptedXprv }.to_json
+      raw_data = HTTP.new(token).post("/api/v1/keychain", body)
 
       # TODO: Handle errors
-      new(session, raw_data)
+      new(token, raw_data)
     end
 
     # = Create Bitgo Keychain
     #
     # Creates a new keychain on BitGo’s servers and returns the public keychain
     # to the caller.
-    def self.create_bitgo(session)
-      request  = Net::HTTP::Post.new('/api/v1/keychain/bitgo')
-      raw_data = session.call(request)
+    def self.create_bitgo(token)
+      raw_data = HTTP.new(token).post('/api/v1/keychain/bitgo')
 
-      new(session, raw_data)
+      new(token, raw_data)
     end
 
     private

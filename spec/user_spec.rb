@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe Bitgo::User do
+  let(:token) { double(:token).as_null_object }
   let(:session) { double(:session) }
   let(:user) { Bitgo::User.new(session, data) }
 
@@ -67,11 +68,12 @@ describe Bitgo::User do
 
   describe '.me!' do
     before do
-      allow(session).to receive(:call) { get_fixture('user.json') }
+      stub_request(:get, "https://test.bitgo.com/api/v1/user/me").
+        to_return(body: get_fixture('user.json').to_json, status: 200)
     end
 
     it 'returns User object' do
-      expect(Bitgo::User.me!(session)).to be_instance_of Bitgo::User
+      expect(Bitgo::User.me!(token)).to be_instance_of Bitgo::User
     end
   end
 end

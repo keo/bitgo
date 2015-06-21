@@ -22,12 +22,12 @@ module Bitgo
       end
     end
 
-    attr_accessor :session, :data
+    attr_accessor :token, :data
 
-    def initialize(session, raw_data={})
-      @session = session
+    def initialize(token, raw_data={})
+      @token    = token
       @raw_data = raw_data
-      @data = ActiveSupport::HashWithIndifferentAccess.new
+      @data     = ActiveSupport::HashWithIndifferentAccess.new
     end
 
     def update_attributes(attrs={})

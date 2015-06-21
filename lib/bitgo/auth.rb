@@ -16,22 +16,17 @@ module Bitgo
     end
 
     def call
-      http = Net::HTTP.new(base_uri.host, base_uri.port)
-      http.use_ssl = true
-
+      http = HTTP.new
       request = Net::HTTP::Post.new('/api/v1/user/login')
-      request.add_field('Content-type', 'application/json')
       request.body = { 'email'    => email,
                        'password' => encrypted_password,
                        'otp'      => otp }.to_json
-      raw_response = http.request(request)
-      response = JSON.parse(raw_response.body)
 
-      handle_error(raw_response)
+      response = http.call(request)
+      handle_error(http.raw_response)
 
       # TODO: Handle errors
       token = AccessToken.new(response)
-
       Session.get(token)
     end
 

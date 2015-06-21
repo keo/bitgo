@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe Bitgo::Keychain do
-  let(:session) { double(:session) }
-  let(:keychain) { Bitgo::Keychain.new(session, data) }
+  let(:token) { double(:token).as_null_object }
+  let(:keychain) { Bitgo::Keychain.new(token, data) }
 
   describe '#xpub' do
     let(:data) { { 'xpub' => 'aoeuaoeu' } }
 
     it 'sets default xpub' do
-      expect(Bitgo::Keychain.new(session).xpub).to be_nil
+      expect(Bitgo::Keychain.new(token).xpub).to be_nil
     end
 
     it 'sets value from raw_data' do
@@ -19,7 +19,7 @@ describe Bitgo::Keychain do
   describe '#bitgo?' do
     let(:data) { { 'isBitgo' => true } }
     it 'sets default' do
-      expect(Bitgo::Keychain.new(session).bitgo?).to be_nil
+      expect(Bitgo::Keychain.new(token).bitgo?).to be_nil
     end
 
     it 'sets bitgo' do
@@ -30,7 +30,7 @@ describe Bitgo::Keychain do
   describe '#path' do
     let(:data) { { 'path' => '0/0' } }
     it 'sets default value' do
-      expect(Bitgo::Keychain.new(session).path).to be_nil
+      expect(Bitgo::Keychain.new(token).path).to be_nil
     end
 
     it 'sets value from raw_data' do
@@ -41,7 +41,7 @@ describe Bitgo::Keychain do
   describe '#xprv' do
     let(:data) { { 'xprv' => 'aoeu12342' } }
     it 'sets default value' do
-      expect(Bitgo::Keychain.new(session).xprv).to be_nil
+      expect(Bitgo::Keychain.new(token).xprv).to be_nil
     end
 
     it 'sets value from raw_data' do
@@ -53,7 +53,7 @@ describe Bitgo::Keychain do
     let(:data) { { 'encryptedXprv' => 'aoeuaeuthth123h1t2h3t12' } }
 
     it 'sets default value' do
-      expect(Bitgo::Keychain.new(session).encrypted_xprv).to be_nil
+      expect(Bitgo::Keychain.new(token).encrypted_xprv).to be_nil
     end
 
     it 'sets value from raw_data' do
@@ -69,29 +69,32 @@ describe Bitgo::Keychain do
     let(:raw_data) { get_fixture('keychain.json') }
 
     before do
-      allow(session).to receive(:call) { raw_data }
+      stub_request(:post, "https://test.bitgo.com/api/v1/keychain").
+        to_return({ body: raw_data.to_json})
     end
 
     it 'creates keychain' do
-      keychain = Bitgo::Keychain.create(session, params)
+      keychain = Bitgo::Keychain.create(token, params)
       expect(keychain).to be_instance_of Bitgo::Keychain
       expect(keychain.xpub).to eq raw_data['xpub']
     end
 
     it 'creates bitgo keychain' do
-      keychain = Bitgo::Keychain.create_bitgo(session)
+      stub_request(:post, "https://test.bitgo.com/api/v1/keychain/bitgo").
+        to_return({ body: raw_data.to_json})
+      keychain = Bitgo::Keychain.create_bitgo(token)
       expect(keychain).to be_instance_of Bitgo::Keychain
     end
   end
 
   describe '.get' do
     before do
-      allow(session).to receive(:call) { get_fixture('keychain.json') }
-      allow(session).to receive(:raw_response) { double(:response, code: '200') }
+      stub_request(:post, "https://test.bitgo.com/api/v1/keychain/xpubkey").
+        to_return(body: get_fixture('keychain.json').to_json, status: 200)
     end
 
     it 'returns kechain' do
-      keychain = Bitgo::Keychain.get(session, 'xpubkey')
+      keychain = Bitgo::Keychain.get(token, 'xpubkey')
       expect(keychain).to be_instance_of Bitgo::Keychain
     end
 
@@ -107,12 +110,12 @@ describe Bitgo::Keychain do
       end
 
       before do
-        allow(session).to receive(:call) { error_response }
-        allow(session).to receive(:raw_response) { raw_response }
+        stub_request(:post, "https://test.bitgo.com/api/v1/keychain/xpubkey").
+          to_return(body: error_response.to_json, status: 401)
       end
 
       it 'raises needs unlock error' do
-        expect { Bitgo::Keychain.get(session, 'xpubkey') }.
+        expect { Bitgo::Keychain.get(token, 'xpubkey') }.
           to raise_error Bitgo::NeedsUnlockError
       end
     end
@@ -120,11 +123,12 @@ describe Bitgo::Keychain do
 
   describe '.list' do
     before do
-      allow(session).to receive(:call) { get_fixture('keychains.json') }
+      stub_request(:get, "https://test.bitgo.com/api/v1/keychain").
+        to_return(body: get_fixture('keychains.json').to_json)
     end
 
     it 'returns an array of keychain object' do
-      keychains = Bitgo::Keychain.list(session)
+      keychains = Bitgo::Keychain.list(token)
       expect(keychains.first).to be_instance_of Bitgo::Keychain
     end
   end
@@ -132,7 +136,7 @@ describe Bitgo::Keychain do
   describe '#update' do
     let(:xpub) { "myxpub" }
     let(:keychain) do
-      Bitgo::Keychain.new(session, { 'xpub' => xpub,
+      Bitgo::Keychain.new(token, { 'xpub' => xpub,
                                      'encryptedXprv' => 'oldxprv' })
     end
     let(:params) do
@@ -147,7 +151,8 @@ describe Bitgo::Keychain do
     end
 
     before do
-      allow(session).to receive(:call) { response_data }
+      stub_request(:put, "https://test.bitgo.com/api/v1/keychain/myxpub").
+        and_return(body: response_data.to_json)
     end
 
     it 'returns updated keychain' do

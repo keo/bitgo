@@ -1,6 +1,7 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'pry'
 require 'bitgo'
+require 'webmock/rspec'
 
 def get_fixture(fixture)
   file = [File.dirname(__FILE__), 'fixtures', fixture].join('/')

@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe Bitgo::Wallet do
+  let(:token) { double(:token).as_null_object }
   let(:session) { double(:session) }
   let(:wallet) { Bitgo::Wallet.new(session, data) }
 
@@ -10,7 +11,7 @@ describe Bitgo::Wallet do
     end
 
     it 'set default data' do
-      wallet = Bitgo::Wallet.new(session)
+      wallet = Bitgo::Wallet.new(token)
       expect(wallet.id).to be_nil
     end
 
@@ -25,7 +26,7 @@ describe Bitgo::Wallet do
     let(:data) { { 'permissions' => 'admin,spend,view' } }
 
     it 'defaults to empty array' do
-      wallet = Bitgo::Wallet.new(session)
+      wallet = Bitgo::Wallet.new(token)
       expect(wallet.permissions).to eq []
     end
 
@@ -38,7 +39,7 @@ describe Bitgo::Wallet do
     let(:data) { { 'balance' => 1 } }
 
     it 'sets default balance' do
-      wallet = Bitgo::Wallet.new(session)
+      wallet = Bitgo::Wallet.new(token)
       expect(wallet.balance).to be_nil
     end
 
@@ -51,7 +52,7 @@ describe Bitgo::Wallet do
     let(:data) { { 'confirmedBalance' => 100 } }
 
     it 'sets default confirmed balance' do
-      wallet = Bitgo::Wallet.new(session)
+      wallet = Bitgo::Wallet.new(token)
       expect(wallet.confirmed_balance).to be_nil
     end
 
@@ -64,7 +65,7 @@ describe Bitgo::Wallet do
     let(:data) { { 'spendingAccount' => true } }
 
     it 'sets default spending account' do
-      expect(Bitgo::Wallet.new(session).spending_account).to be_nil
+      expect(Bitgo::Wallet.new(token).spending_account).to be_nil
     end
 
     it 'sets spending account value' do
@@ -74,34 +75,37 @@ describe Bitgo::Wallet do
 
   describe '#pending_approvals' do
     it 'defaults to empty array' do
-      expect(Bitgo::Wallet.new(session).pending_approvals).to eq []
+      expect(Bitgo::Wallet.new(token).pending_approvals).to eq []
     end
   end
 
   describe '.get' do
     let(:raw_data) { get_fixture('wallet.json') }
+
     before do
-      allow(session).to receive(:call) { raw_data }
+      stub_request(:get, 'https://test.bitgo.com/api/v1/wallet/walletid123123').
+        to_return(body: raw_data.to_json, status: 200)
     end
 
     it 'returns wallet' do
-      wallet = Bitgo::Wallet.get(session, 'walletid123123')
+      wallet = Bitgo::Wallet.get(token, 'walletid123123')
       expect(wallet).to be_instance_of Bitgo::Wallet
     end
 
     it 'sets data from raw_data' do
-      wallet = Bitgo::Wallet.get(session, 'walletid123123')
+      wallet = Bitgo::Wallet.get(token, 'walletid123123')
       expect(wallet.id).to eq raw_data['id']
     end
   end
 
   describe '.list' do
     before do
-      allow(session).to receive(:call) { get_fixture('wallets.json') }
+      stub_request(:get, "https://test.bitgo.com/api/v1/wallet").
+        to_return(body: get_fixture('wallets.json').to_json)
     end
 
     it 'returns list of wallets' do
-      wallets = Bitgo::Wallet.list(session)
+      wallets = Bitgo::Wallet.list(token)
       expect(wallets.first).to be_instance_of Bitgo::Wallet
     end
   end
@@ -120,11 +124,12 @@ describe Bitgo::Wallet do
     end
 
     before do
-      allow(session).to receive(:call) { get_fixture('wallet.json') }
+      stub_request(:post, 'https://test.bitgo.com/api/v1/wallet').
+        to_return(body: get_fixture('wallet.json').to_json)
     end
 
     it 'adds wallet' do
-      wallet = Bitgo::Wallet.add(session, params)
+      wallet = Bitgo::Wallet.add(token, params)
       expect(wallet).to be_instance_of Bitgo::Wallet
     end
   end

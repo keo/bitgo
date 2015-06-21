@@ -15,8 +15,8 @@ RSpec.describe Bitgo::Session do
 
   describe '#unlock' do
     before do
-      allow_any_instance_of(Bitgo::Session).to receive(:call).
-        and_return(get_fixture('session.json'))
+      stub_request(:post, 'https://test.bitgo.com/api/v1/user/unlock').
+        to_return(body: get_fixture('session.json').to_json)
     end
 
     it 'returns the updated itself' do
@@ -26,8 +26,8 @@ RSpec.describe Bitgo::Session do
 
   describe '.get' do
     before do
-      allow_any_instance_of(Bitgo::Session).to receive(:call).
-        and_return(get_fixture('session.json'))
+      stub_request(:get, 'https://test.bitgo.com/api/v1/user/session').
+        to_return(body: get_fixture('session.json').to_json, status: 200)
     end
 
     it 'instantiate session from token' do

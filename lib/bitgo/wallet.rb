@@ -4,8 +4,8 @@ module Bitgo
 
     attributes(:id, :label, :is_active, :balance, :confirmed_balance, :spending_account)
 
-    def initialize(session, raw_data={})
-      super(session, raw_data)
+    def initialize(token, raw_data={})
+      super(token, raw_data)
       @permissions       = raw_data['permissions']
       @pending_approvals = raw_data['pendingApprovals']
     end
@@ -20,16 +20,14 @@ module Bitgo
     end
 
     class << self
-      def get(session, id)
-        request = Net::HTTP::Get.new("/api/v1/wallet/#{id}")
-        data = session.call(request)
-        new(session, data)
+      def get(token, id)
+        data = HTTP.new(token).get("/api/v1/wallet/#{id}")
+        new(token, data)
       end
 
-      def list(session)
-        request = Net::HTTP::Get.new('/api/v1/wallet')
-        raw_wallets = session.call(request)
-        raw_wallets['wallets'].map{|wallet| new(session, wallet)}
+      def list(token)
+        raw_data = HTTP.new(token).get('/api/v1/wallet')
+        raw_data['wallets'].map{|wallet| new(token, wallet)}
       end
 
       # = Add Wallet
@@ -61,22 +59,21 @@ module Bitgo
       #                        wallet; last must be a Bitgo key
       # * <tt>enterprise</tt> - Enterprise ID to create this wallet under.
       #
-      def add(session, params)
+      def add(token, params)
         label      = params.fetch('label')
         m          = params.fetch('m')
         n          = params.fetch('n')
         keychains  = params.fetch('keychains')
         enterprise = params.fetch('enterprise') { nil }
 
-        request = Net::HTTP::Post.new('/api/v1/wallet')
-        request.body = { 'label'      => label,
-                         'm'          => m,
-                         'n'          => n,
-                         'keychains'  => keychains,
-                         'enterprise' => enterprise }.to_json
-        raw_data = session.call(request)
+        body = { 'label'      => label,
+                 'm'          => m,
+                 'n'          => n,
+                 'keychains'  => keychains,
+                 'enterprise' => enterprise }.to_json
+        raw_data = HTTP.new(token).post('/api/v1/wallet', body)
 
-        new(session, raw_data)
+        new(token, raw_data)
       end
     end
   end

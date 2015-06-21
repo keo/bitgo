@@ -12,14 +12,13 @@ describe Bitgo::Auth do
   end
 
   describe '#call' do
-
     context 'on success' do
-      let(:response) do
-        double(:response, code: '200', body: get_fixture('access_token.json').to_json)
-      end
-
       before do
-        allow_any_instance_of(Net::HTTP).to receive(:request) { response }
+        stub_request(:post, 'https://test.bitgo.com/api/v1/user/login').
+          to_return(body: get_fixture('access_token.json').to_json, status: 200)
+
+        stub_request(:get, 'https://test.bitgo.com/api/v1/user/session').
+          to_return(body: get_fixture('session.json').to_json, status: 200)
       end
 
       it 'returns session object' do
@@ -28,12 +27,9 @@ describe Bitgo::Auth do
     end
 
     context 'on bad request error'  do
-      let(:response) do
-        double(:response, code: '400', body: '{}')
-      end
-
       before do
-        allow_any_instance_of(Net::HTTP).to receive(:request) { response }
+        stub_request(:post, 'https://test.bitgo.com/api/v1/user/login').
+          to_return(body: '{}', status: 400)
       end
 
       it 'raise a BadRequestError' do
@@ -44,12 +40,9 @@ describe Bitgo::Auth do
     end
 
     context 'on unauthorized error'  do
-      let(:response) do
-        double(:response, code: '401', body: '{}')
-      end
-
       before do
-        allow_any_instance_of(Net::HTTP).to receive(:request) { response }
+        stub_request(:post, 'https://test.bitgo.com/api/v1/user/login').
+          to_return(body: '{}', status: 401)
       end
 
       it 'raises unauthorized error' do
