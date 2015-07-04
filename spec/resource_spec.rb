@@ -55,9 +55,5 @@ describe Bitgo::Resource do
       expect { @resource.update_attributes('foo' => 'y') }.
         to change { @resource.foo }.from('x').to('y')
     end
-
-    it 'does not assign non-existing attribute' do
-      @resource.update_attributes('alien' => 'xxx')
-    end
   end
 end

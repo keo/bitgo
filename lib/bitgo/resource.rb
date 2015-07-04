@@ -4,16 +4,7 @@ module Bitgo
 
     def self.attribute(attr)
       @@attributes << attr
-
-      define_method attr do
-        normalized_attr = attr.to_s.camelize(:lower)
-        @data[attr] = @data[attr] || @raw_data[attr.to_s.camelize(:lower)]
-        @data[attr]
-      end
-
-      define_method "#{attr}=" do |val|
-        @data[attr] = val
-      end
+      attr_accessor attr
     end
 
     def self.attributes(*attrs)
@@ -22,18 +13,25 @@ module Bitgo
       end
     end
 
-    attr_accessor :token, :data
+    attr_accessor :token
 
     def initialize(token, raw_data={})
       @token    = token
-      @raw_data = raw_data
-      @data     = ActiveSupport::HashWithIndifferentAccess.new
+      @raw_data = raw_data || {}
+      assign_raw_data_to_instance_variable
     end
 
     def update_attributes(attrs={})
-      attrs.each do |k, v|
-        attr = k.to_s
-        @data[attr] = v if @@attributes.include?(attr)
+      attrs.each do |attr, val|
+        send("#{attr}=", val)
+      end
+    end
+
+    private
+
+    def assign_raw_data_to_instance_variable
+      @raw_data.each do |attr, val|
+        instance_variable_set("@#{attr.underscore}", val)
       end
     end
   end
